@@ -60,10 +60,8 @@ class Trainer:
 
     def run_epoch(self):
         '''
-        print evaluation results
+
         '''
-        # for eval_class in self.eval_classes.values():
-        #     eval_class.reset()
 
         total_time = 0.0
         total_frame = 0.0
@@ -96,7 +94,6 @@ class Trainer:
 
                 # self.model.(self.config['monitoring']['save_dir'])
                 paddle.save(self.model.state_dict(), self.config['monitoring']['save_dir'] + "epoch1.pdparams")
-                1/0
 
     def _resume_model(self):
         '''
