@@ -61,8 +61,8 @@
             }
         ],
         "dataset":{
-            "data_path":"dataset/dataset/testing_data/test_labels",
-            "image_path":"dataset/dataset/testing_data/images",
+            "data_path":"./FUNSD/dataset/training_data/test_labels",
+            "image_path":"./FUNSD/dataset/training_data/images",
             "dict_path":"./configs/ernie_config/vocab.txt",
             "dict_params":{
                 "lower":true,
@@ -123,8 +123,8 @@
             }
         ],
         "dataset":{
-            "data_path":"dataset/dataset/testing_data/test_labels",
-            "image_path":"dataset/dataset/testing_data/images",
+            "data_path":"./FUNSD/dataset/testing_data/test_labels",
+            "image_path":"./FUNSD/dataset/testing_data/images",
             "dict_path":"./configs/ernie_config/vocab.txt",
             "dict_params":{
                 "lower":true,
@@ -163,6 +163,7 @@
     "monitoring" : {
         "log_iter" : 1,
         "save_module" : 1,
-        "save_dir" : "models/"
+        "save_dir" : "models/",
+        "log_file": "run.log"
     }
 }

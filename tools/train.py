@@ -6,7 +6,6 @@ import os
 import re
 import sys
 import json
-import logging
 import argparse
 import functools
 import importlib
@@ -19,6 +18,7 @@ sys.path.append(os.path.abspath(os.path.join(__dir__, '../')))
 from utils.utility import add_arguments, print_arguments
 from utils.build_dataloader import build_dataloader
 from utils.metrics import build_metric
+from utils.log import setup_logger
 from external.evaler import Evaler
 from external.trainer import Trainer
 
@@ -31,7 +31,7 @@ add_arg = functools.partial(add_arguments, argparser=parser)
 parser = argparse.ArgumentParser('launch for eval')
 parser.add_argument('--config_file', type=str, required=True)
 parser.add_argument('--task_type', type=str, required=True)
-parser.add_argument('--weights_path', type=str, required=True)
+parser.add_argument('--weights_path', type=str, default=None)
 
 args = parser.parse_args()
 print_arguments(args)
@@ -56,10 +56,9 @@ def main(config):
 	model_config = config['architecture']
 
 	weights_path = args.weights_path
-
-	assert weights_path.endswith('.pdparams') and \
-			os.path.isfile(weights_path), \
-			'the weights_path %s is not existed!' % weights_path
+	logging = setup_logger('logs',
+						   os.path.join(config['monitoring']['save_dir'],
+						   				config['monitoring']['log_file']))
 
 	config['init_model'] = weights_path
 	train_config['dataset']['max_seqlen'] = \
@@ -100,13 +99,12 @@ def main(config):
 	eval_classes = build_metric(train_config['metric'])
 
 	#start
-#     logging.info('eval start...')
-	trainer = Trainer(config, model, train_loader)
+	trainer = Trainer(config, model, train_loader, logging)
 	evaler = Evaler(config, model, eval_loader, eval_classes)
-	print("Strat training........................")
+	logging.info("Start training........................")
 	trainer.train()
 
-	print("Strat evaluation............")
+	logging.info("Start evaluation............")
 	evaler.run()
 	logging.info('eval end...')
 
