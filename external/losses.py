@@ -47,13 +47,11 @@ class RELoss(nn.Layer):
         self.alpha = 1
         self.beta = 1
 
-    def forward(self, outputs):
+    def forward(self, logits, labels):
         loss_bce = 0.0
         loss_rank = 0.0
         # for b in range(batchsize):
-        link_logit = outputs['logit']
-        labels = outputs['label'].astype("float32")
-        loss_bce += self.loss_bce(link_logit, labels)
+        loss_bce += self.loss_bce(logits, labels)
         # loss_rank += self.loss_rank(link_logit, labels)
         # print(loss_bce)
         # print(loss_rank)

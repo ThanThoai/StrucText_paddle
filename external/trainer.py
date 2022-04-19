@@ -9,7 +9,7 @@ import logging
 import numpy as np
 import paddle as P
 from tqdm import trange
-from .linking.loss import RELoss
+from .losses import RELoss
 import paddle.fluid as fluid
 import paddle
 
@@ -30,7 +30,8 @@ class Trainer:
         self.config = config
         self.init_model = config['init_model']
         self.train_config = config['train']
-        self.loss_fn = RELoss(alpha = self.train_config['loss']['loss_bce'], beta = self.train_config['loss']['loss_rank'])
+        self.loss_fn = RELoss(alpha = self.train_config['loss']['loss_bce'],
+                              beta = self.train_config['loss']['loss_rank'])
         self.logging = logging
         t_total = len(self.train_data_loader) * self.train_config['epoch']
 
@@ -76,7 +77,7 @@ class Trainer:
             feed_names = self.train_config['feed_names']
             output = self.model(*input_data, feed_names=feed_names)
             # loss, loss_bce, loss_rank = self.loss_fn(output)
-            loss = self.loss_fn(output)
+            loss = self.loss_fn(output['logit'], output['label'].astype("float32"))
             total_loss.append(loss.item())
             loss.backward()
             self.optimizer.step()
