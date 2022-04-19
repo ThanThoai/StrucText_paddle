@@ -102,7 +102,7 @@ class Model(Encoder):
         link_emb = P.abs(link_emb - link_emb.transpose((0, 2, 1, 3)))
         link_logit = self.link_classifier(link_emb).squeeze(-1)
         link_logit = F.sigmoid(link_logit) * mask
-        print(link_logit.shape)
+        # print(link_logit.shape)
         return {'logit': link_logit, 'label': link_label}
 
 

@@ -53,7 +53,6 @@ class RELoss(nn.Layer):
         # for b in range(batchsize):
         link_logit = outputs['logit']
         labels = outputs['label'].astype("float32")
-        a = self.loss_bce(link_logit.reshape((2, -1)), labels.reshape((2, -1)))
         loss_bce += self.loss_bce(link_logit, labels)
         # loss_rank += self.loss_rank(link_logit, labels)
         # print(loss_bce)

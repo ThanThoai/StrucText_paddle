@@ -89,7 +89,7 @@ class Trainer:
     def train(self):
         for epoch in range(self.train_config['epoch']):
             self.logging.info(f"Training in epoch {epoch}/{self.train_config['epoch']}")
-            # self.run_epoch()
+            self.run_epoch()
             if epoch % self.config['monitoring']['save_module'] == 0:
                 # self.model.save_pretrained(self.config['monitoring']['save_dir'])
 
