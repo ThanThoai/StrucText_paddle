@@ -93,7 +93,8 @@ class Trainer:
                 # self.model.save_pretrained(self.config['monitoring']['save_dir'])
 
                 # self.model.(self.config['monitoring']['save_dir'])
-                paddle.save(self.model.state_dict(), self.config['monitoring']['save_dir'] + "epoch1.pdparams")
+                path_model = os.path.join(self.config['monitoring']['save_dir'], f"epoch_{epoch}.params")
+                paddle.save(self.model.state_dict(), path_model)
 
     def _resume_model(self):
         '''
