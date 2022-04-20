@@ -21,7 +21,6 @@ from utils.metrics import build_metric
 from utils.log import logger as logging
 from external.evaler import Evaler
 from external.trainer import Trainer
-from external.joint_trainer import JointTrainer
 
 np.set_printoptions(threshold=np.inf)
 parser = argparse.ArgumentParser(description=__doc__)
@@ -38,14 +37,9 @@ args = parser.parse_args()
 print_arguments(args)
 config = json.loads(open(args.config_file).read())
 
-ALL_MODULES = ['labeling_segment', 'labeling_token', 'linking', 'joint']
+ALL_MODULES = ['labeling_segment', 'labeling_token', 'linking']
 if args.task_type not in ALL_MODULES:
 	raise ValueError('Not valid task_type %s in %s' % (args.task_type, str(ALL_MODULES)))
-
-# choose trainer
-TrainerClass = Trainer
-if args.task_type == 'joint':
-	TrainerClass = JointTrainer
 
 # modules
 model = importlib.import_module('external.' + args.task_type + '.modules.model')
@@ -65,6 +59,8 @@ def main(config):
 
 	config['init_model'] = weights_path
 	train_config['dataset']['max_seqlen'] = \
+			model_config['embedding']['max_seqlen']
+	eval_config['dataset']['max_seqlen'] = \
 			model_config['embedding']['max_seqlen']
 
 	place = P.set_device('cpu')
@@ -99,9 +95,9 @@ def main(config):
 	model = Model(model_config, train_config['feed_names'])
 
 	#metric
-	eval_classes = build_metric(train_config['metric'])
+	eval_classes = build_metric(eval_config['metric'])
 
-	trainer = TrainerClass(config, model, train_loader)
+	trainer = Trainer(config, model, train_loader)
 	evaler = Evaler(config, model, eval_loader, eval_classes)
 
 	logging.info("Start training........................")

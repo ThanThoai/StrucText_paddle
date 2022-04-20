@@ -77,7 +77,9 @@ class Evaler:
         :return:
         '''
         para_path = self.init_model
-        if os.path.exists(para_path):
+        if para_path != None and os.path.exists(para_path):
             para_dict = P.load(para_path)
             self.model.set_dict(para_dict)
             logging.info('Load init model from %s', para_path)
+        else:
+            logging.info('Checkpoint is not found')
