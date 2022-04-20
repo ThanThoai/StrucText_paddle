@@ -43,7 +43,7 @@
             "loss_rank" : 1.0
         },
         "optimizer" : {
-            "lr" : 0.0001,
+            "lr" : 0.00001,
             "epsilon" : 0.0001,
             "weight_decay" : 0.1,
             "warmup_steps" : 1
@@ -52,20 +52,6 @@
             "collect_batch":false,
             "num_workers":5
         },
-        "metric":[
-            {
-                "name":"labeling_cls",
-                "label_names":["other", "header", "question", "answer"],
-                "ignore_idx":[0],
-                "type":"TabClsMetric"
-            },
-            {
-                "name":"linking_re",
-                "type":"ReScoreMetric",
-                "mode":"boundaries",
-                "threshold": 0.5
-            }
-        ],
         "dataset":{
             "data_path":"./FUNSD/dataset/training_data/test_labels",
             "image_path":"./FUNSD/dataset/training_data/images",
@@ -120,13 +106,15 @@
             "collect_batch":false,
             "num_workers":5
         },
-        "metric":[
+        "ser_metric":[
             {
                 "name":"labeling_cls",
                 "label_names":["other", "header", "question", "answer"],
                 "ignore_idx":[0],
                 "type":"TabClsMetric"
-            },
+            }
+        ],
+        "link_metric":[
             {
                 "name":"linking_re",
                 "type":"ReScoreMetric",
@@ -147,7 +135,7 @@
                 "img_token":"[IMG]",
                 "mask_token":"[MASK]"
             },
-            "batch_size":5,
+            "batch_size":1,
             "shuffle":false,
             "image_shape":[
                 512,

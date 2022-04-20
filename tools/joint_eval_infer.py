@@ -19,7 +19,7 @@ sys.path.append(os.path.abspath(os.path.join(__dir__, '../')))
 from utils.utility import add_arguments, print_arguments
 from utils.build_dataloader import build_dataloader
 from utils.metrics import build_metric
-from external.evaler import Evaler
+from external.joint_evaler import JointEvaler
 
 np.set_printoptions(threshold=np.inf)
 parser = argparse.ArgumentParser(description=__doc__)
@@ -38,7 +38,7 @@ args = parser.parse_args()
 print_arguments(args)
 config = json.loads(open(args.config_file).read())
 
-ALL_MODULES = ['labeling_segment', 'labeling_token', 'linking']
+ALL_MODULES = ['joint']
 if args.task_type not in ALL_MODULES:
     raise ValueError('Not valid task_type %s in %s' % (args.task_type, str(ALL_MODULES)))
 
@@ -89,14 +89,16 @@ def eval(config):
     model = Model(model_config, eval_config['feed_names'])
 
     #metric
-    eval_classes = build_metric(eval_config['metric'])
+    eval_classes_ser = build_metric(eval_config['ser_metric'])
+    eval_classes_link = build_metric(eval_config['link_metric'])
 
     #start
     logging.info('eval start...')
-    eval = Evaler(config=config,
-                  model=model,
-                  data_loader=eval_loader,
-                  eval_classes=eval_classes)
+    eval = JointEvaler(config=config,
+                       model=model,
+                       data_loader=eval_loader,
+                       eval_classes_ser=eval_classes_ser,
+                       eval_classes_link=eval_classes_link)
 
     eval.run()
     logging.info('eval end...')
