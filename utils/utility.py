@@ -18,6 +18,7 @@ from __future__ import division
 from __future__ import print_function
 import distutils.util
 import six
+import os
 
 def print_arguments(args):
     """Print argparse's arguments.
@@ -58,3 +59,14 @@ def add_arguments(argname, type, default, help, argparser, **kwargs):
         type=type,
         help=help + ' Default: %(default)s.',
         **kwargs)
+
+
+def makedirs(path):
+    """
+    Create directory if not existing.
+    Args:
+        path (str): target directory
+    """
+    if not os.path.exists(path):
+        os.makedirs(path)
+

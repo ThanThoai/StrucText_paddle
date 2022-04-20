@@ -175,7 +175,6 @@
     "monitoring" : {
         "log_iter" : 1,
         "save_module" : 1,
-        "save_dir" : "models/",
-        "log_file": "run.log"
+        "save_dir" : "models/"
     }
 }

@@ -1,31 +1,26 @@
 import logging
+import os
+from datetime import datetime
+
+from utils.utility import makedirs
 
 
-def setup_logger(logger_name, log_file, level="INFO"):
-    l = logging.getLogger(logger_name)
-    template=str("%(asctime)s [%(filename)s:%(lineno)s - %(funcName)s()] %(message)s")
-    formatter = logging.Formatter(template)
-    fileHandler = logging.FileHandler(log_file, mode='a')
-    fileHandler.setFormatter(formatter)
-    streamHandler = logging.StreamHandler()
-    streamHandler.setFormatter(formatter)
+LOGGER_NAME = 'run log'
+LOG_FOLDER = 'logs'
+makedirs(LOG_FOLDER)
+LOG_PATH = os.path.join(LOG_FOLDER, datetime.now().strftime('%Y%m%d%H%M%S') + '.log')
+    
+logger = logging.getLogger(LOGGER_NAME)
+template=str("%(asctime)s [%(filename)s:%(lineno)s - %(funcName)s()] %(message)s")
+formatter = logging.Formatter(template)
+fileHandler = logging.FileHandler(LOG_PATH, mode='a')
+fileHandler.setFormatter(formatter)
+streamHandler = logging.StreamHandler()
+streamHandler.setFormatter(formatter)
 
-    l.addHandler(fileHandler)
-    l.addHandler(streamHandler)
+logger.addHandler(fileHandler)
+logger.addHandler(streamHandler)
 
-    if level == "NOTSET":
-        l.setLevel(logging.NOTSET)
-    elif level == "DEBUG":
-        l.setLevel(logging.DEBUG)
-    elif level == "INFO":
-        l.setLevel(logging.INFO)
-    elif level == "WARNING":
-        l.setLevel(logging.WARNING)
-    elif level == "ERROR":
-        l.setLevel(logging.ERROR)
-    elif level == "CRITICAL":
-        l.setLevel(logging.CRITICAL)
-    else:
-        l.setLevel(logging.INFO)
+logger.setLevel(logging.INFO)
 
-    return l
+

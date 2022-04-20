@@ -18,7 +18,7 @@ sys.path.append(os.path.abspath(os.path.join(__dir__, '../')))
 from utils.utility import add_arguments, print_arguments
 from utils.build_dataloader import build_dataloader
 from utils.metrics import build_metric
-from utils.log import setup_logger
+from utils.log import logger as logging
 from external.evaler import Evaler
 from external.trainer import Trainer
 from external.joint_trainer import JointTrainer
@@ -62,9 +62,6 @@ def main(config):
 	model_config = config['architecture']
 
 	weights_path = args.weights_path
-	logging = setup_logger('logs',
-						   os.path.join(config['monitoring']['save_dir'],
-						   				config['monitoring']['log_file']))
 
 	config['init_model'] = weights_path
 	train_config['dataset']['max_seqlen'] = \
@@ -104,7 +101,7 @@ def main(config):
 	#metric
 	eval_classes = build_metric(train_config['metric'])
 
-	trainer = TrainerClass(config, model, train_loader, logging)
+	trainer = TrainerClass(config, model, train_loader)
 	evaler = Evaler(config, model, eval_loader, eval_classes)
 
 	logging.info("Start training........................")
@@ -112,7 +109,7 @@ def main(config):
 
 	logging.info("Start evaluation............")
 	evaler.run()
-	
+
 	logging.info('eval end...')
 
 #start to eval

@@ -14,7 +14,6 @@ import gzip
 import json
 import codecs
 import random
-import logging
 import argparse
 import numpy as np
 import paddle
@@ -29,6 +28,7 @@ from collections import namedtuple
 from paddle.fluid import core
 from model.ernie.tokenizing_ernie import ErnieTokenizer
 from utils.imaug.operators import DecodeImage, NormalizeImage
+from utils.log import logger as logging
 
 Feature = namedtuple("Feature", [
     'images', 'sentence', 'sentence_bboxes', 'sentence_ids', 'sentence_pos',
