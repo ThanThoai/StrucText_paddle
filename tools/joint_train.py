@@ -97,18 +97,43 @@ def main(config):
 	#metric
 	eval_classes_ser = build_metric(eval_config['ser_metric'])
 	eval_classes_link = build_metric(eval_config['link_metric'])
+	# best metrics
+	best_ser_macro_f1 = 0
+	best_ser_micro_f1 = 0
+	best_re_f1 = 0
+	best_re_macro_f1 = 0
+	should_save_ckpt = False
 
-	# TODO: get epochs out here
 	trainer = JointTrainer(config, model, train_loader)
 	evaler = JointEvaler(config, model, eval_loader, eval_classes_ser, eval_classes_link)
 
 	logging.info("Start training........................")
-	trainer.train()
+	for epoch in range(train_config['epoch']):
+		logging.info(f"Training in epoch {epoch}/{train_config['epoch']}")
+		trainer.train()
+		logging.info(f"Evaluation in epoch {epoch}/{train_config['epoch']}")
+		(ser_macro_f1, ser_micro_f1), (re_f1, re_macro_f1) = evaler.run()
 
-	logging.info("Start evaluation............")
-	evaler.run()
+		if ser_macro_f1 > best_ser_macro_f1:
+			best_ser_macro_f1 = ser_macro_f1
+			should_save_ckpt = True
+		if ser_micro_f1 > best_ser_micro_f1:
+			best_ser_micro_f1 = ser_micro_f1
+			should_save_ckpt = True
+		if re_f1 > best_re_f1:
+			best_re_f1 = re_f1
+			should_save_ckpt = True
+		if re_macro_f1 > best_re_macro_f1:
+			best_re_macro_f1 = re_macro_f1
+			should_save_ckpt = True
 
-	logging.info('eval end...')
+		if should_save_ckpt:
+			ckpt_name = "epoch_{}_serF1_{:.04f}_{:.04f}_reF1_{:.04f}_{:.04f}.pdparams".format(
+				epoch, ser_macro_f1, ser_micro_f1, re_f1, re_macro_f1)
+			path_model = os.path.join(config['monitoring']['save_dir'], ckpt_name)
+			P.save(model.state_dict(), path_model)
+
+
 
 #start to eval
 if __name__ == '__main__':

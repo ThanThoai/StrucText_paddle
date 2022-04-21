@@ -97,15 +97,17 @@ class TabClsMetric(object):
         r = np.mean([x[2] for x in data_list[1:] if x[-1] > 0])
         f = np.mean([x[3] for x in data_list[1:] if x[-1] > 0])
         data_list.append([self.main_indicator + '-level Macro F1', p, r, f, ''])
+        re_macro_f1 = f
 
         acc = [x for i, x in enumerate(acc) if i not in self.ignore_idx]
         p = np.sum([x[0] for x in acc]) / np.sum([x[1] for x in acc])
         r = np.sum([x[0] for x in acc]) / np.sum([x[2] for x in acc])
         f = 2 * r * p / max(1e-6, r + p)
         data_list.append([self.main_indicator + '-level Micro F1', p, r, f, ''])
+        re_micro_f1 = f
 
         form = tabulate.tabulate(data_list, tablefmt='grid', headers='firstrow')
-        return form
+        return form, {'macro_f1': re_macro_f1, 'micro_f1': re_micro_f1}
 
     def reset(self):
         """ clear count """

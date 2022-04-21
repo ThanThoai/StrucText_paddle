@@ -44,6 +44,10 @@ class JointEvaler:
 
         total_time = 0.0
         total_frame = 0.0
+        ser_macro_f1 = 0
+        ser_micro_f1 = 0
+        re_f1 = 0
+        re_macro_f1 = 0
         t = trange(self.len_step)
         loader = self.valid_data_loader()
         for step_idx in t:
@@ -82,10 +86,18 @@ class JointEvaler:
             total_frame += input_data[0].shape[0]
         metrics = 'fps : {}'.format(total_frame / total_time)
         for key, val in self.eval_classes_ser.items():
-            metrics += '\n[Eval Validation - SER] {}:\n'.format(key) + str(val.get_metric())
+            table_results, ser_results = val.get_metric()
+            metrics += '\n[Eval Validation - SER] {}:\n'.format(key) + str(table_results)
+            ser_macro_f1 = ser_results['macro_f1']
+            ser_micro_f1 = ser_results['micro_f1']
         for key, val in self.eval_classes_link.items():
-            metrics += '\n[Eval Validation - LINK] {}:\n'.format(key) + str(val.get_metric())
+            re_metrics = val.get_metric()
+            metrics += '\n[Eval Validation - LINK] {}:\n'.format(key) + str(re_metrics)
+            re_f1 = re_metrics['F1-SCORE']
+            re_macro_f1 = re_metrics['Macro_f1']
         print(metrics)
+
+        return (ser_macro_f1, ser_micro_f1), (re_f1, re_macro_f1)
 
     def _resume_model(self):
         '''

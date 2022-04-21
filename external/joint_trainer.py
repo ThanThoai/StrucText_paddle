@@ -91,15 +91,7 @@ class JointTrainer:
                 logging.info("iter [{}/{}]: loss: {:0.6f}, lr: {:0.6f}, total_time: {:0.6f}".format(step_idx, self.len_step, np.mean(total_loss), self.optimizer.get_lr(), total_time))
         
     def train(self):
-        for epoch in range(self.train_config['epoch']):
-            logging.info(f"Training in epoch {epoch}/{self.train_config['epoch']}")
-            self.run_epoch()
-            if epoch % self.config['monitoring']['save_module'] == 0:
-                # self.model.save_pretrained(self.config['monitoring']['save_dir'])
-
-                # self.model.(self.config['monitoring']['save_dir'])
-                path_model = os.path.join(self.config['monitoring']['save_dir'], f"epoch_{epoch}.params")
-                P.save(self.model.state_dict(), path_model)
+        self.run_epoch()
 
     def _resume_model(self):
         '''
