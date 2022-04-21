@@ -99,6 +99,7 @@ def build_dataloader(config, dataset, mode, device, distributed=False):
         batch_sampler=batch_sampler,
         collate_fn=collate_fn,
         places=device,
+        use_shared_memory=False,
         timeout=60,
         num_workers=num_workers,
         return_list=True)
