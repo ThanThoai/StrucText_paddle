@@ -5,7 +5,6 @@ from __future__ import print_function
 import os
 import sys
 import time
-import logging
 import numpy as np
 import paddle as P
 from tqdm import trange
@@ -13,12 +12,14 @@ from .losses import RELoss
 import paddle.fluid as fluid
 import paddle
 
+from utils.log import logger as logging
+
 class Trainer:
     """
     Trainer class
     """
 
-    def __init__(self, config, model, data_loader, logging):
+    def __init__(self, config, model, data_loader):
         '''
         :param config:
         :param model:
@@ -32,7 +33,6 @@ class Trainer:
         self.train_config = config['train']
         self.loss_fn = RELoss(alpha = self.train_config['loss']['loss_bce'],
                               beta = self.train_config['loss']['loss_rank'])
-        self.logging = logging
         t_total = len(self.train_data_loader) * self.train_config['epoch']
 
         self.lr_scheduler = P.optimizer.lr.PolynomialDecay(
@@ -85,11 +85,11 @@ class Trainer:
             total_time += time.time() - start
             total_frame += input_data[0].shape[0]
             if step_idx % self.config['monitoring']['log_iter'] == 0:
-                self.logging.info("iter [{}/{}]: loss: {:0.6f}, lr: {:0.6f}, total_time: {:0.6f}".format(step_idx, self.len_step, np.mean(total_loss), self.optimizer.get_lr(), total_time))
+                logging.info("iter [{}/{}]: loss: {:0.6f}, lr: {:0.6f}, total_time: {:0.6f}".format(step_idx, self.len_step, np.mean(total_loss), self.optimizer.get_lr(), total_time))
         
     def train(self):
         for epoch in range(self.train_config['epoch']):
-            self.logging.info(f"Training in epoch {epoch}/{self.train_config['epoch']}")
+            logging.info(f"Training in epoch {epoch}/{self.train_config['epoch']}")
             self.run_epoch()
             if epoch % self.config['monitoring']['save_module'] == 0:
                 # self.model.save_pretrained(self.config['monitoring']['save_dir'])
@@ -107,6 +107,6 @@ class Trainer:
         if para_path != None and os.path.exists(para_path):
             para_dict = P.load(para_path)
             self.model.set_dict(para_dict)
-            self.logging.info('Load init model from %s', para_path)
+            logging.info('Load init model from %s', para_path)
         else:
-            self.logging.info('Checkpoint is not found')
+            logging.info('Checkpoint is not found')
