@@ -102,16 +102,17 @@ def main(config):
 	best_ser_micro_f1 = 0
 	best_re_f1 = 0
 	best_re_macro_f1 = 0
-	should_save_ckpt = False
 
 	trainer = JointTrainer(config, model, train_loader)
 	evaler = JointEvaler(config, model, eval_loader, eval_classes_ser, eval_classes_link)
 
 	logging.info("Start training........................")
 	for epoch in range(train_config['epoch']):
-		logging.info(f"Training in epoch {epoch}/{train_config['epoch']}")
-		trainer.train()
-		logging.info(f"Evaluation in epoch {epoch}/{train_config['epoch']}")
+		should_save_ckpt = False
+		# logging.info(f"Training in epoch {epoch}/{train_config['epoch']}")
+		avg_loss, cur_lr, total_time = trainer.train()
+		logging.info("Epoch [{}/{}]: loss: {:0.6f}, lr: {:0.6f}, total_time: {:0.6f}".format(epoch, train_config['epoch'], avg_loss, cur_lr, total_time))
+		# logging.info(f"Evaluation in epoch {epoch}/{train_config['epoch']}")
 		(ser_macro_f1, ser_micro_f1), (re_f1, re_macro_f1) = evaler.run()
 
 		if ser_macro_f1 > best_ser_macro_f1:

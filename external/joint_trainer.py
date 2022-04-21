@@ -87,11 +87,13 @@ class JointTrainer:
             self.optimizer.clear_grad()
             total_time += time.time() - start
             total_frame += input_data[0].shape[0]
-            if step_idx % self.config['monitoring']['log_iter'] == 0:
-                logging.info("iter [{}/{}]: loss: {:0.6f}, lr: {:0.6f}, total_time: {:0.6f}".format(step_idx, self.len_step, np.mean(total_loss), self.optimizer.get_lr(), total_time))
-        
+            # if step_idx % self.config['monitoring']['log_iter'] == 0:
+            #     logging.info("iter [{}/{}]: loss: {:0.6f}, lr: {:0.6f}, total_time: {:0.6f}".format(step_idx, self.len_step, np.mean(total_loss), self.optimizer.get_lr(), total_time))
+
+        return np.mean(total_loss), self.optimizer.get_lr(), total_time
+
     def train(self):
-        self.run_epoch()
+        return self.run_epoch()
 
     def _resume_model(self):
         '''
