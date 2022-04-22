@@ -5,10 +5,11 @@ from __future__ import print_function
 import os
 import sys
 import time
-import logging
 import numpy as np
 import paddle as P
 from tqdm import trange
+
+from utils.log import logger as logging
 
 class JointEvaler:
     """
@@ -95,7 +96,7 @@ class JointEvaler:
             metrics += '\n[Eval Validation - LINK] {}:\n'.format(key) + str(re_metrics)
             re_f1 = re_metrics['F1-SCORE']
             re_macro_f1 = re_metrics['Macro_f1']
-        print(metrics)
+        logging.info(metrics)
 
         return (ser_macro_f1, ser_micro_f1), (re_f1, re_macro_f1)
 
