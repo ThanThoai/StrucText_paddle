@@ -98,7 +98,12 @@ class Model(Encoder):
         cls_mask = cls_mask.cast('bool')
         cls_label = cls_label.cast('int64')
 
-        selected_cls_logit = cls_logit[cls_mask]
+        num_classes_ser = cls_logit.shape[-1]
+        selected_cls_logit = P.masked_select(
+            cls_logit,
+            P.tile(cls_mask.unsqueeze(-1), repeat_times=[1, num_classes_ser])
+        ).reshape((-1,num_classes_ser))
+        # selected_cls_logit = cls_logit[cls_mask]
         selected_cls_label = P.masked_select(cls_label, cls_mask)
         selected_cls_pred = P.masked_select(cls_pred, cls_mask)
         cls_mask = cls_mask.cast('int32')
