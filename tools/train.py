@@ -96,17 +96,34 @@ def main(config):
 
 	#metric
 	eval_classes = build_metric(eval_config['metric'])
+	# best metrics
+	best_re_f1 = 0
+	best_re_macro_f1 = 0
 
 	trainer = Trainer(config, model, train_loader)
 	evaler = Evaler(config, model, eval_loader, eval_classes)
 
 	logging.info("Start training........................")
-	trainer.train()
+	for epoch in range(train_config['epoch']):
+		should_save_ckpt = False
+		# logging.info(f"Training in epoch {epoch}/{train_config['epoch']}")
+		avg_loss, cur_lr, total_time = trainer.train()
+		logging.info("Epoch [{}/{}]: loss: {:0.6f}, lr: {:0.6f}, total_time: {:0.6f}".format(epoch, train_config['epoch'], avg_loss, cur_lr, total_time))
+		# logging.info(f"Evaluation in epoch {epoch}/{train_config['epoch']}")
+		re_f1, re_macro_f1 = evaler.run()
 
-	logging.info("Start evaluation............")
-	evaler.run()
+		if re_f1 > best_re_f1:
+			best_re_f1 = re_f1
+			should_save_ckpt = True
+		if re_macro_f1 > best_re_macro_f1:
+			best_re_macro_f1 = re_macro_f1
+			should_save_ckpt = True
 
-	logging.info('eval end...')
+		if should_save_ckpt:
+			ckpt_name = "epoch_{}_reF1_{:.04f}_{:.04f}.pdparams".format(
+				epoch, re_f1, re_macro_f1)
+			path_model = os.path.join(config['monitoring']['save_dir'], ckpt_name)
+			P.save(model.state_dict(), path_model)
 
 #start to eval
 if __name__ == '__main__':

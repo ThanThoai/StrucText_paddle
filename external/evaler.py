@@ -41,6 +41,8 @@ class Evaler:
 
         total_time = 0.0
         total_frame = 0.0
+        re_f1 = 0
+        re_macro_f1 = 0
         t = trange(self.len_step)
         loader = self.valid_data_loader()
         for step_idx in t:
@@ -58,7 +60,7 @@ class Evaler:
                     logit = output['logit_prim'].numpy()
                     mask = output.get('mask', None)
                 else:
-                    print(output)
+                    # print(output)
                     label = output['label'].numpy()
                     logit = output['logit'].numpy()
                     mask = output.get('mask', None)
@@ -68,8 +70,13 @@ class Evaler:
             total_frame += input_data[0].shape[0]
         metrics = 'fps : {}'.format(total_frame / total_time)
         for key, val in self.eval_classes.items():
-            metrics += '\n{}:\n'.format(key) + str(val.get_metric())
-        print('[Eval Validation] {}'.format(metrics))
+            re_metrics = val.get_metric()
+            metrics += '\n[Eval Validation - LINK] {}:\n'.format(key) + str(re_metrics)
+            re_f1 = re_metrics['F1-SCORE']
+            re_macro_f1 = re_metrics['Macro_f1']
+        print(metrics)
+
+        return re_f1, re_macro_f1
 
     def _resume_model(self):
         '''
