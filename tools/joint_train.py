@@ -57,7 +57,6 @@ def main(config):
 
 	weights_path = args.weights_path
 
-	config['init_model'] = weights_path
 	train_config['dataset']['max_seqlen'] = \
 			model_config['embedding']['max_seqlen']
 	eval_config['dataset']['max_seqlen'] = \
@@ -93,6 +92,14 @@ def main(config):
 			False)
 	#model
 	model = Model(model_config, train_config['feed_names'])
+
+	# load pretrained weight
+	if weights_path != None and os.path.exists(weights_path):
+		weight_dict = P.load(weights_path)
+		model.set_dict(weight_dict)
+		logging.info('Load init model from %s', weights_path)
+	else:
+		logging.info('Checkpoint is not found')
 
 	#metric
 	eval_classes_ser = build_metric(eval_config['ser_metric'])

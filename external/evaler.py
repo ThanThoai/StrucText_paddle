@@ -27,7 +27,6 @@ class Evaler:
         self.valid_data_loader = data_loader
         self.len_step = len(self.valid_data_loader)
 
-        self.init_model = config['init_model']
         self.valid_config = config['eval']
 
     @P.no_grad()
@@ -35,7 +34,6 @@ class Evaler:
         '''
         print evaluation results
         '''
-        self._resume_model()
         self.model.eval()
         for eval_class in self.eval_classes.values():
             eval_class.reset()
@@ -79,15 +77,3 @@ class Evaler:
 
         return re_f1, re_macro_f1
 
-    def _resume_model(self):
-        '''
-        Resume from saved model
-        :return:
-        '''
-        para_path = self.init_model
-        if para_path != None and os.path.exists(para_path):
-            para_dict = P.load(para_path)
-            self.model.set_dict(para_dict)
-            logging.info('Load init model from %s', para_path)
-        else:
-            logging.info('Checkpoint is not found')

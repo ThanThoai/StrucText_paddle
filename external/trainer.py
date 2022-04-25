@@ -29,7 +29,6 @@ class Trainer:
         self.train_data_loader = data_loader
         self.len_step = len(self.train_data_loader)
         self.config = config
-        self.init_model = config['init_model']
         self.train_config = config['train']
         self.loss_fn = RELoss(alpha = self.train_config['loss']['loss_bce'],
                               beta = self.train_config['loss']['loss_rank'])
@@ -58,7 +57,6 @@ class Trainer:
             weight_decay = self.train_config['optimizer']['weight_decay']
         )
         self.model.train()
-        self._resume_model()
 
     def run_epoch(self):
         '''
@@ -92,15 +90,3 @@ class Trainer:
     def train(self):
         return self.run_epoch()
 
-    def _resume_model(self):
-        '''
-        Resume from saved model
-        :return:
-        '''
-        para_path = self.init_model
-        if para_path != None and os.path.exists(para_path):
-            para_dict = P.load(para_path)
-            self.model.set_dict(para_dict)
-            logging.info('Load init model from %s', para_path)
-        else:
-            logging.info('Checkpoint is not found')

@@ -66,7 +66,6 @@ def eval(config):
     assert os.path.isdir(label_path), 'the label_dir %s is not existed!' % label_path
     assert os.path.isdir(image_path), 'the image_dir %s is not existed!' % image_path
 
-    config['init_model'] = weights_path
     eval_config['dataset']['data_path'] = label_path
     eval_config['dataset']['image_path'] = image_path
     eval_config['dataset']['max_seqlen'] = \
@@ -87,6 +86,14 @@ def eval(config):
             False)
     #model
     model = Model(model_config, eval_config['feed_names'])
+
+    # load pretrained weight
+    if weights_path != None and os.path.exists(weights_path):
+        weight_dict = P.load(weights_path)
+        model.set_dict(weight_dict)
+        logging.info('Load init model from %s', weights_path)
+    else:
+        logging.info('Checkpoint is not found')
 
     #metric
     eval_classes_ser = build_metric(eval_config['ser_metric'])

@@ -29,7 +29,6 @@ class JointTrainer:
         self.train_data_loader = data_loader
         self.len_step = len(self.train_data_loader)
         self.config = config
-        self.init_model = config['init_model']
         self.train_config = config['train']
         self.ser_loss = CrossEntropyLoss()
         self.link_loss_fn = RELoss(alpha = self.train_config['loss']['loss_bce'],
@@ -59,7 +58,6 @@ class JointTrainer:
             weight_decay = self.train_config['optimizer']['weight_decay']
         )
         self.model.train()
-        self._resume_model()
 
     def run_epoch(self):
         total_time = 0.0
@@ -95,15 +93,3 @@ class JointTrainer:
     def train(self):
         return self.run_epoch()
 
-    def _resume_model(self):
-        '''
-        Resume from saved model
-        :return:
-        '''
-        para_path = self.init_model
-        if para_path != None and os.path.exists(para_path):
-            para_dict = P.load(para_path)
-            self.model.set_dict(para_dict)
-            logging.info('Load init model from %s', para_path)
-        else:
-            logging.info('Checkpoint is not found')
